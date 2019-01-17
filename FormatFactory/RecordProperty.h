@@ -20,6 +20,8 @@ public:
 public:
 	//探测模式
 	ModeType _ModeType;
+	//放大倍数
+	unsigned short _Amp;
 	//开始采集时间
     CTime _TimeStart;
 	//结束采集时间
@@ -30,6 +32,6 @@ public:
 	double _FwAngle;
 
 public:
-	void Store(ofstream& ofp);
-	int Restore(unsigned char* pContent);
+	void Store(ofstream& ofp,IFormatProperty::FormatType formatType = IFormatProperty::FormatType_Lidar);
+	int Restore(unsigned char* pContent,IFormatProperty::FormatType formatType = IFormatProperty::FormatType_Lidar);
 };

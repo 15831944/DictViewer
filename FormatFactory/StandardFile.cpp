@@ -19,7 +19,22 @@ BOOL StandardFile::IsDirty()
 
 void StandardFile::Store(ofstream& ofp)
 {
+	if(_pFileProperty == NULL
+		|| _pStationProperty == NULL
+		|| _pRecordProperty == NULL
+		|| _Channels.size() == 0)
+		return;
 
+	_pFileProperty->Store(ofp);
+	_pStationProperty->Store(ofp,_pFileProperty->_FormatType);
+	_pRecordProperty->Store(ofp,_pFileProperty->_FormatType);
+
+	vector<Channel*>::iterator it = _Channels.begin();
+	while(it != _Channels.end())
+	{
+		(*it)->Store(ofp,_pFileProperty->_FormatType);
+		it++;
+	}
 }
 
 int StandardFile::Restore(unsigned char* pContent)
@@ -51,7 +66,7 @@ int StandardFile::Restore(unsigned char* pContent)
 void StandardFile::ConvertToAscii(ofstream& ofp)
 {
 	ofp<< "#File Property"<<endl;
-	ofp<< " File Type:"<<_pFileProperty->_FileType<<endl;
+	ofp<< " File Type:"<<_pFileProperty->_FormatType<<endl;
 
 	ofp<< endl;
 	ofp<< "#Station Property"<<endl;

@@ -11,9 +11,9 @@ public:
 
 public:
 	ChannelProperty* _pChannelProperty;
-    double* _pDatas;
+    float* _pDatas;
 
 public:
-	void Store(ofstream& ofp);
-	int Restore(unsigned char* pContent);
+	void Store(ofstream& ofp,IFormatProperty::FormatType formatType = IFormatProperty::FormatType_Lidar);
+	int Restore(unsigned char* pContent,IFormatProperty::FormatType formatType = IFormatProperty::FormatType_Lidar);
 };

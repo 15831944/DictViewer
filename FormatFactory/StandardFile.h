@@ -4,7 +4,7 @@
 #include "RecordProperty.h"
 #include "Channel.h"
 
-class AFX_EXT_CLASS StandardFile : public IFormatProperty
+class AFX_EXT_CLASS StandardFile
 {
 public:
 	StandardFile(void);

@@ -11,7 +11,7 @@ StationProperty::~StationProperty(void)
 
 }
 
-int StationProperty::Restore(unsigned char* pContent)
+int StationProperty::Restore(unsigned char* pContent,IFormatProperty::FormatType formatType)
 {
 	unsigned short usTemp;
 	double fTemp;
@@ -43,6 +43,9 @@ int StationProperty::Restore(unsigned char* pContent)
 	usTemp += pContent[26];
 	_Position._altitude = usTemp;
    
+	if(formatType != IFormatProperty::FormatType_Lidar)
+		return 0;
+
 	for (unsigned short i = 0; i < 3; i++)
 	{
 		usTemp = pContent[47 + i * 2];
@@ -64,7 +67,35 @@ int StationProperty::Restore(unsigned char* pContent)
 	return 0;
 }
 
-void StationProperty::Store(ofstream& ofp)
+void StationProperty::Store(ofstream& ofp,IFormatProperty::FormatType formatType)
 {
-	
+	char temp[4] = {0};
+	temp[1] = _ID.GetAt(0);
+	CString tempStr = _ID;
+	tempStr.Delete(0,1);
+	unsigned short usTemp = _ttof((LPTSTR)(LPCTSTR)tempStr);
+	memcpy(temp+2,(char*)&usTemp,2);
+	ofp.write(temp,4);
+
+	usTemp = _Position._longitude / (180.0 / 4096.0) * 8.0;
+	ofp.write((char*)&usTemp,2);
+	usTemp = _Position._latitude / (180.0 / 4096.0) * 8.0;
+	ofp.write((char*)&usTemp,2);
+	ofp.write((char*)&(_Position._altitude),2);
+
+	memset(temp,0,4);
+	ofp.write(temp,2);
+
+	if(formatType == IFormatProperty::FormatType_Lidar)
+	{
+		ofp.seekp(std::ios::beg,46);
+		for(int i=0;i<3;i++)
+		{
+			if(i < _LenOfWaves.size())
+				usTemp = _LenOfWaves.at(i);
+			else usTemp = 0;
+			ofp.write((char*)&usTemp,2);
+		}
+		ofp.write((char*)&_ChannelCount,2);
+	}
 }
