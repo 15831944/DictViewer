@@ -66,11 +66,11 @@ void CChartView::OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHint
 
 	AddProductView(pStandardFile->_Channels.size());
 
-	double* range;
+	float* range;
 	for(int i=0;i<pStandardFile->_Channels.size();i++)
 	{
 		ChannelProperty* pChannelProperty = pStandardFile->_Channels.at(i)->_pChannelProperty;
-		range = new double[pChannelProperty->_DistCount];
+		range = new float[pChannelProperty->_DistCount];
 		for(int j=0;j<pChannelProperty->_DistCount;j++)
 			range[j] = (j+1) * pChannelProperty->_DistResolution;
 

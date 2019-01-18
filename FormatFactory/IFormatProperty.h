@@ -8,8 +8,18 @@ public:
 	IFormatProperty(void);
 	~IFormatProperty(void);
 
+	typedef enum tagFormatType
+	{
+		FormatType_Lidar = 0,
+		FormatType_Product,
+		FormatType_Unknown,
+		FormatType_Sum
+	}FormatType;
+
+	static char* FormatTypeCaption[FormatType_Sum];
+
 public:
-	virtual void Store(ofstream& ofp) = 0;
-	virtual int Restore(unsigned char* pContent) = 0;
+	virtual void Store(ofstream& ofp,FormatType formatType = FormatType_Lidar) = 0;
+	virtual int Restore(unsigned char* pContent,FormatType formatType = FormatType_Lidar) = 0;
 };
 

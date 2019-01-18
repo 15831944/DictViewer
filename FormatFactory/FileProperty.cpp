@@ -1,12 +1,10 @@
 #include "StdAfx.h"
 #include "FileProperty.h"
 
-char* FileProperty::FileTypeCaption[] = {"原始数据","产品数据","未定义"};
-
 FileProperty::FileProperty(void)
 {
 	_FormatVersion = 0;
-	_FileType = FileType_Unknown;
+	_FormatType = IFormatProperty::FormatType_Unknown;
 }
 
 
@@ -15,31 +13,32 @@ FileProperty::~FileProperty(void)
 }
 
 
-void FileProperty::Store(ofstream& ofp)
+void FileProperty::Store(ofstream& ofp,IFormatProperty::FormatType formatType)
 {
-	/*char* pChar = {0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00,0x00};
+	char* pChar = new char[14];
+	memset(pChar,0x00,14);
 	ofp.write(pChar,14);
 
-	unsigned short temp = _FileType;
+	unsigned short temp = _FormatType;
 	pChar = (char*)&temp;
 	ofp.write(pChar,2);
 
 	pChar = (char*)&FormatVersion;
-	ofp.write(pChar,2);*/
+	ofp.write(pChar,2);
 }
 
-int FileProperty::Restore(unsigned char* pContent)
+int FileProperty::Restore(unsigned char* pContent,IFormatProperty::FormatType formatType)
 {
 	unsigned short usTemp;
     usTemp = pContent[15];
     usTemp *= 8;
     usTemp += pContent[14];
-    if (usTemp >= FileType_Sum-1)
+    if (usTemp >= IFormatProperty::FormatType_Sum-1)
 	{
-		_FileType = FileType_Unknown;
+		_FormatType = IFormatProperty::FormatType_Unknown;
         return -1;
 	}
-    _FileType = (FileType)usTemp;
+    _FormatType = (IFormatProperty::FormatType)usTemp;
 
     usTemp = pContent[17];
     usTemp = (unsigned short)(usTemp<<8);

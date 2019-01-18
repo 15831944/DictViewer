@@ -34,6 +34,6 @@ public:
 	unsigned short _ChannelCount;
 
 public:
-	int Restore(unsigned char* pContent);
-	void Store(ofstream& ofp);
+	int Restore(unsigned char* pContent,IFormatProperty::FormatType formatType = IFormatProperty::FormatType_Lidar);
+	void Store(ofstream& ofp,IFormatProperty::FormatType formatType = IFormatProperty::FormatType_Lidar);
 };

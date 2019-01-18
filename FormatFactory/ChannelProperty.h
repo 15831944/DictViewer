@@ -26,11 +26,28 @@ public:
 		WaveType_Sum
 	}WaveType;
 
+	typedef enum tagProductType
+	{
+		ProductType_Unkown,
+		ProductType_MEXT,
+		ProductType_MBAKSCAT,
+		ProductType_MDEP,
+		ProductType_REXT,
+		ProductType_RBAKSCAT,
+
+		ProductType_AOD,
+		ProductType_VVIS,
+		ProductType_MPBL,
+		ProductType_PM10,
+		ProductType_CLOUD,
+		ProductType_SUM = ProductType_CLOUD
+	}ProductType;
+
     static char* AcqTypeString[AcqType_Sum];
 	static char* WaveTypeString[WaveType_Sum];
-
+	static char* ProductTypeString[ProductType_SUM+1];
 protected:
-	unsigned int _NO;
+	unsigned short _NO;
 
 public:
 	AcqType _AcqType;
@@ -41,7 +58,9 @@ public:
     unsigned short _DistCount;
 	unsigned int _DataPtr;
 
+	ProductType _ProductType;
+
 public:
-	void Store(ofstream& ofp);
-	int Restore(unsigned char* pContent);
+	void Store(ofstream& ofp, IFormatProperty::FormatType formatType = IFormatProperty::FormatType_Lidar);
+	int Restore(unsigned char* pContent, IFormatProperty::FormatType formatType = IFormatProperty::FormatType_Lidar);
 };

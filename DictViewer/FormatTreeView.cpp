@@ -70,7 +70,7 @@ void CFormatTreeView::UpdateFileProperty(FileProperty* pFileProperty)
 	CTreeCtrl& treeCtrl = GetTreeCtrl();
 
 	HTREEITEM parentNode = treeCtrl.InsertItem(_T("文件属性"),TVI_ROOT);
-	CString tempStr(FileProperty::FileTypeCaption[pFileProperty->_FileType]);
+	CString tempStr(IFormatProperty::FormatTypeCaption[pFileProperty->_FormatType]);
 	treeCtrl.InsertItem(_T("文件类型:") + tempStr,parentNode);
 	tempStr.Format(_T("%.2f"),(float)pFileProperty->_FormatVersion);
 	treeCtrl.InsertItem(_T("格式版本:") + tempStr,parentNode);

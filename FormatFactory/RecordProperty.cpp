@@ -15,12 +15,46 @@ RecordProperty::~RecordProperty()
 
 }
 
-void RecordProperty::Store(ofstream& ofp)
+void RecordProperty::Store(ofstream& ofp,IFormatProperty::FormatType formatType)
 {
+	unsigned short usTemp;
+	usTemp = _ModeType;
+	if(formatType  == IFormatProperty::FormatType_Product)
+	{
+		usTemp = usTemp << 14;
+		usTemp |= (_Amp & 0x3fff);
+	}
+	ofp.write((char*)&usTemp,2);
 
+	CTime t(1970, 1, 1, 12, 0, 0);
+	CTimeSpan tSpan = _TimeStart - t;
+	CTimeSpan tSpanX(12*60*60);
+	tSpan = tSpan + tSpanX;
+	usTemp = tSpan.GetDays();
+	CTimeSpan tSpanE(usTemp * 3600 * 24);
+	tSpan = tSpan - tSpanE;
+	unsigned int iTemp = tSpan.GetTotalSeconds();
+	ofp.write((char*)&iTemp,4);
+
+	tSpan = _TimeEnd - t;
+	tSpan = tSpan + tSpanX;
+	tSpan = tSpan - tSpanE;
+	iTemp = tSpan.GetTotalSeconds();
+	ofp.write((char*)&iTemp,4);
+
+	ofp.write((char*)&usTemp,2);
+
+	usTemp = _FyAngle / (180.0 / 4096.0) * 8.0;
+	ofp.write((char*)&usTemp,2);
+
+	if(formatType  == IFormatProperty::FormatType_Lidar)
+	{
+		usTemp = _FwAngle / (180.0 / 4096.0) * 8.0;
+		ofp.write((char*)&usTemp,2);
+	}
 }
 
-int RecordProperty::Restore(unsigned char* pContent)
+int RecordProperty::Restore(unsigned char* pContent,IFormatProperty::FormatType formatType)
 {
 	unsigned short usTemp;
 	unsigned int iTemp, iTempc;
@@ -29,12 +63,26 @@ int RecordProperty::Restore(unsigned char* pContent)
 	usTemp = pContent[31];
 	usTemp = (unsigned short)(usTemp << 8);
 	usTemp += pContent[30];
-	if (usTemp >= ModeType_Sum)
+	if(formatType == IFormatProperty::FormatType_Lidar)
 	{
-		_ModeType = ModeType_Unknown;
-		return -1;
+		if (usTemp >= ModeType_Sum)
+		{
+			_ModeType = ModeType_Unknown;
+			return -1;
+		}
+		_ModeType = (ModeType)usTemp;
 	}
-	_ModeType = (ModeType)usTemp;
+	else
+	{
+		_Amp = (usTemp & 0x3fff);
+		usTemp = (usTemp >> 14);
+		if (usTemp >= ModeType_Sum)
+		{
+			_ModeType = ModeType_Unknown;
+			return -1;
+		}
+		_ModeType = (ModeType)usTemp;
+	}
 
 	unsigned short totalDays;
 	totalDays = pContent[41];
@@ -77,6 +125,9 @@ int RecordProperty::Restore(unsigned char* pContent)
 	if (fTemp > 90.0 || fTemp < -90.0)
 		return -2;
 	_FyAngle = fTemp;
+
+	if(formatType != IFormatProperty::FormatType_Lidar)
+		return 0;
 
 	usTemp = pContent[45];
 	usTemp = (unsigned short)(usTemp << 8);
